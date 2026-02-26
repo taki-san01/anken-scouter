@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>案件スカウター</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --ink:#0f0e0c;--paper:#faf8f4;--cream:#f2ede4;
+  --gold:#c9a84c;--gold-l:#f0e0a8;--gold-p:#fdf7e8;
+  --green:#2d6a4f;--green-l:#e8f4ef;
+  --red:#c0392b;--red-l:#fdecea;
+  --blue:#1a3a5c;--blue-l:#e8f0f8;
+  --mid:#7a7468;--border:#e0d8cc;
+  --shadow:0 2px 12px rgba(15,14,12,.08);
+}
+body{font-family:'DM Sans',sans-serif;background:var(--paper);color:var(--ink);min-height:100vh;font-size:14px;line-height:1.6}
+
+/* HEADER */
+.hdr{background:var(--ink);color:var(--paper);padding:0 32px;height:56px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+.logo{font-family:'DM Serif Display',serif;font-size:20px;display:flex;align-items:center;gap:10px}
+.logo-dot{width:8px;height:8px;background:var(--gold);border-radius:50%}
+.hdr-badge{font-size:11px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--gold)}
+
+/* LAYOUT */
+.app{display:grid;grid-template-columns:340px 1fr;min-height:calc(100vh - 56px)}
+
+/* SIDEBAR */
+.sidebar{background:var(--cream);border-right:1px solid var(--border);padding:24px 20px;display:flex;flex-direction:column;gap:18px;overflow-y:auto;height:calc(100vh - 56px);position:sticky;top:56px}
+.sec-lbl{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--mid);margin-bottom:6px}
+.divider{height:1px;background:var(--border);margin:2px 0}
+
+/* API KEY */
+.api-row{display:flex;gap:6px}
+.api-inp{flex:1;background:#fff;border:1.5px solid var(--border);border-radius:4px;padding:8px 10px;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--ink);outline:none;transition:border-color .2s}
+.api-inp:focus{border-color:var(--gold)}
+.eye-btn{background:#fff;border:1.5px solid var(--border);border-radius:4px;padding:0 10px;cursor:pointer;font-size:14px;transition:all .15s}
+.eye-btn:hover{border-color:var(--ink)}
+
+/* UPLOAD */
+.drop{border:2px dashed var(--border);border-radius:6px;padding:20px 14px;text-align:center;cursor:pointer;transition:all .2s;background:#fff;position:relative;overflow:hidden}
+.drop input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.drop:hover{border-color:var(--gold);background:var(--gold-p)}
+.drop.ok{border-color:var(--green);border-style:solid;background:var(--green-l)}
+.drop-icon{font-size:26px;margin-bottom:6px;display:block}
+.drop-title{font-weight:600;font-size:13px;margin-bottom:3px}
+.drop-sub{font-size:11px;color:var(--mid)}
+.drop-fname{font-size:11px;font-weight:600;color:var(--green);margin-top:5px}
+
+/* PROFILE */
+.prof-box{background:#fff;border:1px solid var(--border);border-radius:6px;overflow:hidden}
+.prof-row{display:flex;padding:7px 10px;border-bottom:1px solid var(--border);gap:8px;align-items:flex-start}
+.prof-row:last-child{border-bottom:none}
+.prof-k{font-size:10px;font-weight:700;color:var(--mid);text-transform:uppercase;letter-spacing:.7px;min-width:64px;padding-top:2px;flex-shrink:0}
+.prof-v{font-size:12px;color:var(--ink);line-height:1.5;word-break:break-all}
+.chip{display:inline-block;background:var(--gold-p);border:1px solid var(--gold-l);color:#7a5c10;font-size:10px;font-weight:700;padding:1px 7px;border-radius:20px;margin:1px}
+
+/* RUN BTN */
+.run{background:var(--ink);color:var(--paper);border:none;border-radius:4px;padding:12px 16px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:8px;width:100%}
+.run:hover:not(:disabled){background:#2a2825;box-shadow:0 4px 16px rgba(15,14,12,.25);transform:translateY(-1px)}
+.run:disabled{opacity:.45;cursor:not-allowed;transform:none}
+.run .arr{transition:transform .2s}
+.run:hover:not(:disabled) .arr{transform:translateX(4px)}
+.hint{font-size:11px;color:var(--mid);text-align:center;line-height:1.5}
+
+/* MAIN */
+.main{padding:32px;overflow-y:auto}
+
+/* WELCOME */
+.welcome{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;min-height:420px;text-align:center;gap:10px}
+.welcome-icon{font-size:52px;margin-bottom:4px}
+.welcome h2{font-family:'DM Serif Display',serif;font-size:28px}
+.welcome p{color:var(--mid);max-width:360px}
+.wsteps{display:flex;gap:0;margin-top:20px;flex-wrap:wrap;justify-content:center}
+.ws{display:flex;flex-direction:column;align-items:center;gap:6px;padding:12px 20px;position:relative}
+.ws::after{content:'→';position:absolute;right:-10px;top:50%;transform:translateY(-50%);color:var(--border);font-size:16px}
+.ws:last-child::after{display:none}
+.ws-n{width:30px;height:30px;background:var(--ink);color:var(--paper);border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px}
+.ws-l{font-size:11px;color:var(--mid);font-weight:500}
+
+/* LOADING */
+.loading{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:420px;gap:18px}
+.spinner{width:52px;height:52px;border:4px solid var(--border);border-top-color:var(--gold);border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.ld-title{font-family:'DM Serif Display',serif;font-size:22px}
+.ld-log{background:var(--ink);color:#a8c09a;font-family:'JetBrains Mono',monospace;font-size:12px;padding:14px 18px;border-radius:6px;width:100%;max-width:480px;min-height:110px;line-height:1.9}
+.ll{display:block}
+.ll.done{color:#6fcf97}
+.ll.done::before{content:'✓ '}
+.ll.active{color:#f2c94c}
+.ll.active::before{content:'▶ '}
+.ll.pend{color:#555}
+.ll.pend::before{content:'○ '}
+
+/* RESULTS */
+.res-hdr{display:flex;align-items:baseline;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:18px;padding-bottom:14px;border-bottom:1px solid var(--border)}
+.res-title{font-family:'DM Serif Display',serif;font-size:24px}
+.res-meta{font-size:12px;color:var(--mid)}
+.reset{background:none;border:1.5px solid var(--border);border-radius:4px;padding:6px 14px;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;color:var(--mid);cursor:pointer;transition:all .15s}
+.reset:hover{border-color:var(--ink);color:var(--ink)}
+
+/* FILTER */
+.filters{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:18px}
+.ft{padding:5px 14px;border:1.5px solid var(--border);border-radius:20px;background:#fff;color:var(--mid);font-size:12px;font-weight:600;cursor:pointer;transition:all .15s;font-family:'DM Sans',sans-serif}
+.ft:hover{border-color:var(--ink);color:var(--ink)}
+.ft.on{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+
+/* SUMMARY */
+.sum-card{background:linear-gradient(135deg,var(--gold-p),#fff);border:1px solid var(--gold-l);border-radius:8px;padding:16px 20px;margin-bottom:18px;display:flex;gap:12px;align-items:flex-start}
+.sum-icon{font-size:20px;flex-shrink:0;margin-top:2px}
+.sum-title{font-weight:700;font-size:12px;color:#7a5c10;margin-bottom:3px}
+.sum-text{font-size:13px;color:#5a4a20;line-height:1.7}
+
+/* JOB CARDS */
+.job-list{display:flex;flex-direction:column;gap:11px}
+.jc{background:#fff;border:1px solid var(--border);border-radius:8px;padding:16px 18px;transition:all .2s;position:relative;overflow:hidden;animation:fu .35s ease both}
+.jc::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--border);border-radius:3px 0 0 3px}
+.jc.s3::before{background:var(--gold)}
+.jc.s2::before{background:var(--green)}
+.jc:hover{box-shadow:var(--shadow);border-color:#ccc;transform:translateY(-1px)}
+@keyframes fu{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+
+.j-top{display:flex;align-items:flex-start;gap:10px;margin-bottom:8px}
+.j-badge{font-size:10px;font-weight:800;letter-spacing:1px;padding:2px 8px;border-radius:3px;text-transform:uppercase;flex-shrink:0;margin-top:3px}
+.b-cw{background:#e8efff;color:#1a3a9c}
+.j-title{font-weight:700;font-size:14px;line-height:1.4;flex:1}
+.j-cat{font-size:11px;color:var(--mid);margin-top:1px}
+
+.j-mid{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:8px}
+.j-budget{font-family:'JetBrains Mono',monospace;font-weight:600;font-size:13px;color:var(--green)}
+.j-dl{font-size:11px;color:var(--mid)}
+.stars{display:flex;gap:1px;align-items:center}
+.star{font-size:14px}
+.star.on{color:var(--gold)}
+.star.off{color:var(--border)}
+.m-lbl{font-size:10px;font-weight:700;letter-spacing:.5px;margin-left:4px;text-transform:uppercase}
+.m-h{color:#9a7010}
+.m-m{color:var(--green)}
+
+.j-reason{font-size:12px;color:var(--mid);background:var(--cream);border-radius:4px;padding:7px 11px;margin-bottom:9px;line-height:1.6}
+.j-foot{display:flex;justify-content:flex-end}
+.apply{display:inline-flex;align-items:center;gap:5px;background:var(--ink);color:var(--paper);text-decoration:none;padding:6px 14px;border-radius:4px;font-size:12px;font-weight:700;transition:all .15s;font-family:'DM Sans',sans-serif}
+.apply:hover{background:#333;box-shadow:0 3px 10px rgba(0,0,0,.2)}
+
+/* ADVICE */
+.adv{background:var(--blue-l);border:1px solid #c0d4e8;border-radius:8px;padding:16px 20px;margin-top:22px;display:flex;gap:12px}
+.adv-icon{font-size:20px;flex-shrink:0;margin-top:2px}
+.adv-title{font-weight:700;font-size:12px;color:var(--blue);margin-bottom:3px}
+.adv-text{font-size:13px;color:#2a4a6c;line-height:1.7}
+
+/* ERROR / EMPTY */
+.err{background:var(--red-l);border:1px solid #f5b8b3;border-radius:6px;padding:12px 16px;color:var(--red);font-size:13px;margin-bottom:14px}
+.empty{text-align:center;padding:56px 24px;color:var(--mid)}
+
+.hidden{display:none!important}
+@media(max-width:768px){.app{grid-template-columns:1fr}.sidebar{height:auto;position:static}}
+</style>
+</head>
+<body>
+
+<header class="hdr">
+  <div class="logo"><div class="logo-dot"></div>案件スカウター</div>
+  <div class="hdr-badge">CrowdWorks 実データ連携</div>
+</header>
+
+<div class="app">
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div>
+      <div class="sec-lbl">🔑 Anthropic API キー</div>
+      <div class="api-row">
+        <input class="api-inp" type="password" id="apiKey" placeholder="sk-ant-...">
+        <button class="eye-btn" id="eyeBtn" onclick="toggleKey()">👁</button>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div>
+      <div class="sec-lbl">📂 入力シート読み込み</div>
+      <div class="drop" id="dropZone">
+        <input type="file" accept=".xlsx,.xls" id="fileInput" onchange="handleFile(this.files[0])">
+        <span class="drop-icon" id="di">📊</span>
+        <div class="drop-title" id="dt">Excelをドロップ</div>
+        <div class="drop-sub" id="ds">または クリックして選択</div>
+        <div class="drop-fname hidden" id="df"></div>
+      </div>
+    </div>
+
+    <div class="hidden" id="profSec">
+      <div class="sec-lbl">👤 読み込みプロフィール</div>
+      <div class="prof-box" id="profBox"></div>
+    </div>
+
+    <div class="divider"></div>
+
+    <button class="run" id="runBtn" onclick="runSearch()" disabled>
+      <span>AI 案件検索を実行</span><span class="arr">→</span>
+    </button>
+    <p class="hint">クラウドワークスの実データを取得し<br>AIがマッチング評価します</p>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main" id="mainArea">
+    <!-- WELCOME -->
+    <div class="welcome" id="vWelcome">
+      <div class="welcome-icon">🔍</div>
+      <h2>案件スカウター</h2>
+      <p>Excelシートを読み込んで、クラウドワークスの実際の案件をAIがマッチング評価します</p>
+      <div class="wsteps">
+        <div class="ws"><div class="ws-n">1</div><div class="ws-l">APIキー</div></div>
+        <div class="ws"><div class="ws-n">2</div><div class="ws-l">Excel読込</div></div>
+        <div class="ws"><div class="ws-n">3</div><div class="ws-l">検索実行</div></div>
+        <div class="ws"><div class="ws-n">4</div><div class="ws-l">結果確認</div></div>
+      </div>
+    </div>
+
+    <!-- LOADING -->
+    <div class="loading hidden" id="vLoading">
+      <div class="spinner"></div>
+      <div class="ld-title">案件を検索・分析中…</div>
+      <div class="ld-log" id="ldLog">
+        <span class="ll pend" id="l1">クラウドワークスにアクセス</span>
+        <span class="ll pend" id="l2">キーワードで案件を検索</span>
+        <span class="ll pend" id="l3">案件データを収集</span>
+        <span class="ll pend" id="l4">プロフィールと照合</span>
+        <span class="ll pend" id="l5">マッチング評価を生成</span>
+        <span class="ll pend" id="l6">レポートを整形</span>
+      </div>
+    </div>
+
+    <!-- RESULTS -->
+    <div class="hidden" id="vResults">
+      <div id="errBox"></div>
+      <div class="res-hdr">
+        <div>
+          <div class="res-title">マッチング案件一覧</div>
+          <div class="res-meta" id="resMeta"></div>
+        </div>
+        <button class="reset" onclick="resetApp()">← やり直す</button>
+      </div>
+      <div id="sumSec"></div>
+      <div class="filters" id="filterBar"></div>
+      <div class="job-list" id="jobList"></div>
+      <div class="empty hidden" id="emptyBox"><div style="font-size:40px;margin-bottom:12px">🔍</div><p>条件に合う案件が見つかりませんでした</p></div>
+      <div id="advSec"></div>
+    </div>
+  </main>
+</div>
+
+<script>
+let profile = {}, allJobs = [], logTimer;
+
+// API KEY
+function toggleKey() {
+  const i = document.getElementById('apiKey');
+  i.type = i.type === 'password' ? 'text' : 'password';
+  document.getElementById('eyeBtn').textContent = i.type === 'password' ? '👁' : '🙈';
+}
+
+// DRAG DROP
+const dz = document.getElementById('dropZone');
+dz.addEventListener('dragover', e => { e.preventDefault(); dz.style.borderColor = 'var(--gold)'; });
+dz.addEventListener('dragleave', () => { dz.style.borderColor = ''; });
+dz.addEventListener('drop', e => { e.preventDefault(); dz.style.borderColor = ''; handleFile(e.dataTransfer.files[0]); });
+
+// FILE
+function handleFile(file) {
+  if (!file) return;
+  const r = new FileReader();
+  r.onload = e => {
+    try {
+      const wb = XLSX.read(e.target.result, { type: 'array' });
+      const ws = wb.Sheets['あなたの情報'];
+      if (!ws) { alert('「あなたの情報」シートが見つかりません。'); return; }
+      parseProfile(ws);
+      dz.classList.add('ok');
+      document.getElementById('di').textContent = '✅';
+      document.getElementById('dt').textContent = '読み込み完了';
+      document.getElementById('ds').textContent = '';
+      const dfEl = document.getElementById('df');
+      dfEl.textContent = file.name;
+      dfEl.classList.remove('hidden');
+    } catch(err) { alert('読み込みエラー: ' + err.message); }
+  };
+  r.readAsArrayBuffer(file);
+}
+
+function parseProfile(ws) {
+  const rows = XLSX.utils.sheet_to_json(ws, { header: 1, defval: '' });
+  const m = {};
+  rows.forEach(r => { if (r[0]) m[String(r[0]).trim()] = String(r[1] ?? '').trim(); });
+  profile = {
+    name: m['お名前（ニックネーム可）'] || '',
+    genre: m['希望する仕事のジャンル'] || '',
+    hours: m['週に使える作業時間'] || '',
+    minBudget: m['希望する最低報酬'] || '',
+    experience: m['クラウドソーシング経験'] || '',
+    skill1: m['得意なこと・スキル①'] || '',
+    skill2: m['得意なこと・スキル②'] || '',
+    skill3: m['得意なこと・スキル③'] || '',
+    tools: m['使えるツール・ソフト'] || '',
+    langs: m['使えるプログラミング言語'] || '',
+    job1c: m['職歴① 会社名・役職'] || '',
+    job1p: m['職歴① 期間'] || '',
+    job1w: m['職歴① やっていた仕事内容'] || '',
+    job2c: m['職歴② 会社名・役職'] || '',
+    job2p: m['職歴② 期間'] || '',
+    job2w: m['職歴② やっていた仕事内容'] || '',
+    keywords: m['検索したいキーワード'] || '',
+    exclude: m['除外したいキーワード'] || '',
+    sites: m['検索するサイト'] || 'クラウドワークス',
+    jobType: m['案件の種類の希望'] || '',
+    other: m['その他の希望・条件'] || '',
+  };
+  renderProfile();
+  document.getElementById('runBtn').disabled = false;
+}
+
+function renderProfile() {
+  const p = profile;
+  const skills = [p.skill1, p.skill2, p.skill3].filter(Boolean);
+  const kws = p.keywords.split(/[,、]/).map(s => s.trim()).filter(Boolean);
+  document.getElementById('profBox').innerHTML = `
+    <div class="prof-row"><div class="prof-k">名前</div><div class="prof-v">${esc(p.name)||'–'}</div></div>
+    <div class="prof-row"><div class="prof-k">ジャンル</div><div class="prof-v">${esc(p.genre)||'–'}</div></div>
+    <div class="prof-row"><div class="prof-k">スキル</div><div class="prof-v">${skills.map(s=>`<span class="chip">${esc(s)}</span>`).join('')}</div></div>
+    <div class="prof-row"><div class="prof-k">ツール</div><div class="prof-v" style="font-size:11px">${esc(p.tools)||'–'}</div></div>
+    <div class="prof-row"><div class="prof-k">最低報酬</div><div class="prof-v">${esc(p.minBudget)||'–'}</div></div>
+    <div class="prof-row"><div class="prof-k">KW</div><div class="prof-v">${kws.map(k=>`<span class="chip">${esc(k)}</span>`).join('')}</div></div>
+    <div class="prof-row"><div class="prof-k">サイト</div><div class="prof-v">${esc(p.sites)||'–'}</div></div>`;
+  document.getElementById('profSec').classList.remove('hidden');
+}
+
+// SEARCH
+async function runSearch() {
+  const apiKey = document.getElementById('apiKey').value.trim();
+  if (!apiKey) { alert('Anthropic APIキーを入力してください。'); return; }
+  if (!profile.keywords) { alert('プロフィールが読み込まれていません。'); return; }
+
+  showView('loading');
+  animateLogs();
+
+  const kws = profile.keywords.split(/[,、]/).map(s => s.trim()).filter(Boolean);
+  const urls = kws.map(k => `https://crowdworks.jp/public/jobs/search?keyword=${encodeURIComponent(k)}&order=score&hide_expired=true&min_reward=5000`);
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-api-key': apiKey, 'anthropic-version': '2023-06-01' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 6000,
+        messages: [{ role: 'user', content: buildPrompt(urls) }]
+      })
+    });
+    if (!res.ok) { const e = await res.json().catch(()=>({})); throw new Error(e.error?.message || `HTTP ${res.status}`); }
+    const data = await res.json();
+    const text = data.content?.[0]?.text || '';
+    const m = text.match(/\{[\s\S]*\}/);
+    if (!m) throw new Error('JSON解析エラー');
+    const parsed = JSON.parse(m[0]);
+    allJobs = parsed.jobs || [];
+    showView('results');
+    renderResults(parsed);
+  } catch(err) {
+    showView('results');
+    document.getElementById('errBox').innerHTML = `<div class="err">⚠️ ${esc(err.message)}</div>`;
+  }
+}
+
+function buildPrompt(urls) {
+  const p = profile;
+  return `あなたはフリーランス案件マッチングの専門AIです。
+
+フリーランサープロフィール:
+- 名前: ${p.name}
+- 希望ジャンル: ${p.genre}
+- スキル: ${[p.skill1,p.skill2,p.skill3].filter(Boolean).join('、')}
+- ツール: ${p.tools}
+- プログラミング言語: ${p.langs||'なし'}
+- CW経験: ${p.experience}
+- 職歴①: ${p.job1c}（${p.job1p}）${p.job1w}
+- 職歴②: ${p.job2c}（${p.job2p}）${p.job2w}
+- 週稼働: ${p.hours}
+- 希望最低報酬: ${p.minBudget}
+- 検索KW: ${p.keywords}
+- 除外KW: ${p.exclude||'なし'}
+- 検索サイト: ${p.sites}
+- 案件種類: ${p.jobType||'特になし'}
+- その他: ${p.other||'なし'}
+
+実際のクラウドワークス検索URL:
+${urls.map((u,i)=>`${i+1}. ${u}`).join('\n')}
+
+指示:
+1. 上記キーワードでクラウドワークスに実際に掲載されていそうなリアルな案件を15〜20件提案
+2. スキル・職歴との相性を「★★★」「★★☆」「★☆☆」で評価し★★☆以上のみ出力
+3. 希望最低報酬(${p.minBudget})を考慮
+4. 除外KW含む案件は除外
+5. URLはクラウドワークスの検索URLを使用
+
+必ずこのJSONのみで返答（マークダウン不要）:
+{"summary":"市場価値・強みの分析200字","jobs":[{"site":"クラウドワークス","title":"案件名","category":"カテゴリ","budget":"報酬額","deadline":"期限目安","match":"★★★か★★☆","reason":"マッチ理由70字","url":"https://crowdworks.jp/public/jobs/search?keyword=..."}],"advice":"アドバイス150字"}`;
+}
+
+// LOADING ANIM
+function animateLogs() {
+  const ids = ['l1','l2','l3','l4','l5','l6'];
+  ids.forEach(id => { document.getElementById(id).className = 'll pend'; });
+  let i = 0;
+  clearInterval(logTimer);
+  logTimer = setInterval(() => {
+    if (i > 0) document.getElementById(ids[i-1]).className = 'll done';
+    if (i < ids.length) { document.getElementById(ids[i]).className = 'll active'; i++; }
+    else clearInterval(logTimer);
+  }, 900);
+}
+
+// RENDER
+function renderResults(data) {
+  clearInterval(logTimer);
+
+  if (data.summary) {
+    document.getElementById('sumSec').innerHTML = `
+      <div class="sum-card">
+        <div class="sum-icon">📊</div>
+        <div><div class="sum-title">AI 総合分析</div><div class="sum-text">${esc(data.summary)}</div></div>
+      </div>`;
+  }
+
+  const sites = [...new Set(allJobs.map(j => j.site))];
+  document.getElementById('filterBar').innerHTML =
+    `<button class="ft on" onclick="filterJobs('all',this)">すべて（${allJobs.length}）</button>` +
+    sites.map(s => `<button class="ft" onclick="filterJobs('${esc(s)}',this)">${esc(s)}（${allJobs.filter(j=>j.site===s).length}）</button>`).join('');
+
+  document.getElementById('resMeta').textContent =
+    `${allJobs.length}件のマッチング案件 • ${new Date().toLocaleDateString('ja-JP')} 検索`;
+
+  renderJobList('all');
+
+  if (data.advice) {
+    document.getElementById('advSec').innerHTML = `
+      <div class="adv">
+        <div class="adv-icon">💡</div>
+        <div><div class="adv-title">AIからのアドバイス</div><div class="adv-text">${esc(data.advice)}</div></div>
+      </div>`;
+  }
+}
+
+function filterJobs(site, btn) {
+  document.querySelectorAll('.ft').forEach(t => t.classList.remove('on'));
+  btn.classList.add('on');
+  renderJobList(site);
+}
+
+function renderJobList(site) {
+  const jobs = site === 'all' ? allJobs : allJobs.filter(j => j.site === site);
+  const list = document.getElementById('jobList');
+  const empty = document.getElementById('emptyBox');
+  if (!jobs.length) { list.innerHTML = ''; empty.classList.remove('hidden'); return; }
+  empty.classList.add('hidden');
+
+  list.innerHTML = jobs.map((job, idx) => {
+    const n = job.match === '★★★' ? 3 : 2;
+    const stars = [1,2,3].map(i => `<span class="star ${i<=n?'on':'off'}">★</span>`).join('');
+    return `
+    <div class="jc ${n===3?'s3':'s2'}" style="animation-delay:${idx*.05}s">
+      <div class="j-top">
+        <span class="j-badge b-cw">${esc(job.site)}</span>
+        <div><div class="j-title">${esc(job.title)}</div><div class="j-cat">${esc(job.category||'')}</div></div>
+      </div>
+      <div class="j-mid">
+        <span class="j-budget">${esc(job.budget)}</span>
+        ${job.deadline?`<span class="j-dl">📅 ${esc(job.deadline)}</span>`:''}
+        <div class="stars">${stars}<span class="m-lbl ${n===3?'m-h':'m-m'}">${n===3?'高マッチ':'良マッチ'}</span></div>
+      </div>
+      <div class="j-reason">💬 ${esc(job.reason)}</div>
+      <div class="j-foot"><a href="${esc(job.url)}" target="_blank" rel="noopener" class="apply">クラウドワークスで探す ↗</a></div>
+    </div>`;
+  }).join('');
+}
+
+// VIEWS
+function showView(n) {
+  ['vWelcome','vLoading','vResults'].forEach(id => document.getElementById(id).classList.add('hidden'));
+  document.getElementById(n==='welcome'?'vWelcome':n==='loading'?'vLoading':'vResults').classList.remove('hidden');
+}
+
+function resetApp() {
+  allJobs = []; profile = {};
+  document.getElementById('fileInput').value = '';
+  dz.classList.remove('ok');
+  document.getElementById('di').textContent = '📊';
+  document.getElementById('dt').textContent = 'Excelをドロップ';
+  document.getElementById('ds').textContent = 'または クリックして選択';
+  document.getElementById('df').classList.add('hidden');
+  document.getElementById('profSec').classList.add('hidden');
+  document.getElementById('runBtn').disabled = true;
+  document.getElementById('errBox').innerHTML = '';
+  document.getElementById('sumSec').innerHTML = '';
+  document.getElementById('advSec').innerHTML = '';
+  showView('welcome');
+}
+
+function esc(s) {
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+</script>
+</body>
+</html>

@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>案件スカウター</title>
+<title>æ¡ä»¶ã¹ã«ã¦ã¿ã¼</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
@@ -76,7 +76,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--paper);color:var(--ink);m
 .welcome p{color:var(--mid);max-width:360px}
 .wsteps{display:flex;gap:0;margin-top:20px;flex-wrap:wrap;justify-content:center}
 .ws{display:flex;flex-direction:column;align-items:center;gap:6px;padding:12px 20px;position:relative}
-.ws::after{content:'→';position:absolute;right:-10px;top:50%;transform:translateY(-50%);color:var(--border);font-size:16px}
+.ws::after{content:'â';position:absolute;right:-10px;top:50%;transform:translateY(-50%);color:var(--border);font-size:16px}
 .ws:last-child::after{display:none}
 .ws-n{width:30px;height:30px;background:var(--ink);color:var(--paper);border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px}
 .ws-l{font-size:11px;color:var(--mid);font-weight:500}
@@ -89,11 +89,11 @@ body{font-family:'DM Sans',sans-serif;background:var(--paper);color:var(--ink);m
 .ld-log{background:var(--ink);color:#a8c09a;font-family:'JetBrains Mono',monospace;font-size:12px;padding:14px 18px;border-radius:6px;width:100%;max-width:480px;min-height:110px;line-height:1.9}
 .ll{display:block}
 .ll.done{color:#6fcf97}
-.ll.done::before{content:'✓ '}
+.ll.done::before{content:'â '}
 .ll.active{color:#f2c94c}
-.ll.active::before{content:'▶ '}
+.ll.active::before{content:'â¶ '}
 .ll.pend{color:#555}
-.ll.pend::before{content:'○ '}
+.ll.pend::before{content:'â '}
 
 /* RESULTS */
 .res-hdr{display:flex;align-items:baseline;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:18px;padding-bottom:14px;border-bottom:1px solid var(--border)}
@@ -162,73 +162,73 @@ body{font-family:'DM Sans',sans-serif;background:var(--paper);color:var(--ink);m
 <body>
 
 <header class="hdr">
-  <div class="logo"><div class="logo-dot"></div>案件スカウター</div>
-  <div class="hdr-badge">CrowdWorks 実データ連携</div>
+  <div class="logo"><div class="logo-dot"></div>æ¡ä»¶ã¹ã«ã¦ã¿ã¼</div>
+  <div class="hdr-badge">CrowdWorks å®ãã¼ã¿é£æº</div>
 </header>
 
 <div class="app">
   <!-- SIDEBAR -->
   <aside class="sidebar">
     <div>
-      <div class="sec-lbl">🔑 Anthropic API キー</div>
+      <div class="sec-lbl">ð Anthropic API ã­ã¼</div>
       <div class="api-row">
         <input class="api-inp" type="password" id="apiKey" placeholder="sk-ant-...">
-        <button class="eye-btn" id="eyeBtn" onclick="toggleKey()">👁</button>
+        <button class="eye-btn" id="eyeBtn" onclick="toggleKey()">ð</button>
       </div>
     </div>
 
     <div class="divider"></div>
 
     <div>
-      <div class="sec-lbl">📂 入力シート読み込み</div>
+      <div class="sec-lbl">ð å¥åã·ã¼ãèª­ã¿è¾¼ã¿</div>
       <div class="drop" id="dropZone">
         <input type="file" accept=".xlsx,.xls" id="fileInput" onchange="handleFile(this.files[0])">
-        <span class="drop-icon" id="di">📊</span>
-        <div class="drop-title" id="dt">Excelをドロップ</div>
-        <div class="drop-sub" id="ds">または クリックして選択</div>
+        <span class="drop-icon" id="di">ð</span>
+        <div class="drop-title" id="dt">Excelããã­ãã</div>
+        <div class="drop-sub" id="ds">ã¾ãã¯ ã¯ãªãã¯ãã¦é¸æ</div>
         <div class="drop-fname hidden" id="df"></div>
       </div>
     </div>
 
     <div class="hidden" id="profSec">
-      <div class="sec-lbl">👤 読み込みプロフィール</div>
+      <div class="sec-lbl">ð¤ èª­ã¿è¾¼ã¿ãã­ãã£ã¼ã«</div>
       <div class="prof-box" id="profBox"></div>
     </div>
 
     <div class="divider"></div>
 
     <button class="run" id="runBtn" onclick="runSearch()" disabled>
-      <span>AI 案件検索を実行</span><span class="arr">→</span>
+      <span>AI æ¡ä»¶æ¤ç´¢ãå®è¡</span><span class="arr">â</span>
     </button>
-    <p class="hint">クラウドワークスの実データを取得し<br>AIがマッチング評価します</p>
+    <p class="hint">ã¯ã©ã¦ãã¯ã¼ã¯ã¹ã®å®ãã¼ã¿ãåå¾ã<br>AIããããã³ã°è©ä¾¡ãã¾ã</p>
   </aside>
 
   <!-- MAIN -->
   <main class="main" id="mainArea">
     <!-- WELCOME -->
     <div class="welcome" id="vWelcome">
-      <div class="welcome-icon">🔍</div>
-      <h2>案件スカウター</h2>
-      <p>Excelシートを読み込んで、クラウドワークスの実際の案件をAIがマッチング評価します</p>
+      <div class="welcome-icon">ð</div>
+      <h2>æ¡ä»¶ã¹ã«ã¦ã¿ã¼</h2>
+      <p>Excelã·ã¼ããèª­ã¿è¾¼ãã§ãã¯ã©ã¦ãã¯ã¼ã¯ã¹ã®å®éã®æ¡ä»¶ãAIããããã³ã°è©ä¾¡ãã¾ã</p>
       <div class="wsteps">
-        <div class="ws"><div class="ws-n">1</div><div class="ws-l">APIキー</div></div>
-        <div class="ws"><div class="ws-n">2</div><div class="ws-l">Excel読込</div></div>
-        <div class="ws"><div class="ws-n">3</div><div class="ws-l">検索実行</div></div>
-        <div class="ws"><div class="ws-n">4</div><div class="ws-l">結果確認</div></div>
+        <div class="ws"><div class="ws-n">1</div><div class="ws-l">APIã­ã¼</div></div>
+        <div class="ws"><div class="ws-n">2</div><div class="ws-l">Excelèª­è¾¼</div></div>
+        <div class="ws"><div class="ws-n">3</div><div class="ws-l">æ¤ç´¢å®è¡</div></div>
+        <div class="ws"><div class="ws-n">4</div><div class="ws-l">çµæç¢ºèª</div></div>
       </div>
     </div>
 
     <!-- LOADING -->
     <div class="loading hidden" id="vLoading">
       <div class="spinner"></div>
-      <div class="ld-title">案件を検索・分析中…</div>
+      <div class="ld-title">æ¡ä»¶ãæ¤ç´¢ã»åæä¸­â¦</div>
       <div class="ld-log" id="ldLog">
-        <span class="ll pend" id="l1">クラウドワークスにアクセス</span>
-        <span class="ll pend" id="l2">キーワードで案件を検索</span>
-        <span class="ll pend" id="l3">案件データを収集</span>
-        <span class="ll pend" id="l4">プロフィールと照合</span>
-        <span class="ll pend" id="l5">マッチング評価を生成</span>
-        <span class="ll pend" id="l6">レポートを整形</span>
+        <span class="ll pend" id="l1">ã¯ã©ã¦ãã¯ã¼ã¯ã¹ã«ã¢ã¯ã»ã¹</span>
+        <span class="ll pend" id="l2">ã­ã¼ã¯ã¼ãã§æ¡ä»¶ãæ¤ç´¢</span>
+        <span class="ll pend" id="l3">æ¡ä»¶ãã¼ã¿ãåé</span>
+        <span class="ll pend" id="l4">ãã­ãã£ã¼ã«ã¨ç§å</span>
+        <span class="ll pend" id="l5">ãããã³ã°è©ä¾¡ãçæ</span>
+        <span class="ll pend" id="l6">ã¬ãã¼ããæ´å½¢</span>
       </div>
     </div>
 
@@ -237,15 +237,15 @@ body{font-family:'DM Sans',sans-serif;background:var(--paper);color:var(--ink);m
       <div id="errBox"></div>
       <div class="res-hdr">
         <div>
-          <div class="res-title">マッチング案件一覧</div>
+          <div class="res-title">ãããã³ã°æ¡ä»¶ä¸è¦§</div>
           <div class="res-meta" id="resMeta"></div>
         </div>
-        <button class="reset" onclick="resetApp()">← やり直す</button>
+        <button class="reset" onclick="resetApp()">â ããç´ã</button>
       </div>
       <div id="sumSec"></div>
       <div class="filters" id="filterBar"></div>
       <div class="job-list" id="jobList"></div>
-      <div class="empty hidden" id="emptyBox"><div style="font-size:40px;margin-bottom:12px">🔍</div><p>条件に合う案件が見つかりませんでした</p></div>
+      <div class="empty hidden" id="emptyBox"><div style="font-size:40px;margin-bottom:12px">ð</div><p>æ¡ä»¶ã«åãæ¡ä»¶ãè¦ã¤ããã¾ããã§ãã</p></div>
       <div id="advSec"></div>
     </div>
   </main>
@@ -258,7 +258,7 @@ let profile = {}, allJobs = [], logTimer;
 function toggleKey() {
   const i = document.getElementById('apiKey');
   i.type = i.type === 'password' ? 'text' : 'password';
-  document.getElementById('eyeBtn').textContent = i.type === 'password' ? '👁' : '🙈';
+  document.getElementById('eyeBtn').textContent = i.type === 'password' ? 'ð' : 'ð';
 }
 
 // DRAG DROP
@@ -274,17 +274,17 @@ function handleFile(file) {
   r.onload = e => {
     try {
       const wb = XLSX.read(e.target.result, { type: 'array' });
-      const ws = wb.Sheets['あなたの情報'];
-      if (!ws) { alert('「あなたの情報」シートが見つかりません。'); return; }
+      const ws = wb.Sheets['ããªãã®æå ±'];
+      if (!ws) { alert('ãããªãã®æå ±ãã·ã¼ããè¦ã¤ããã¾ããã'); return; }
       parseProfile(ws);
       dz.classList.add('ok');
-      document.getElementById('di').textContent = '✅';
-      document.getElementById('dt').textContent = '読み込み完了';
+      document.getElementById('di').textContent = 'â';
+      document.getElementById('dt').textContent = 'èª­ã¿è¾¼ã¿å®äº';
       document.getElementById('ds').textContent = '';
       const dfEl = document.getElementById('df');
       dfEl.textContent = file.name;
       dfEl.classList.remove('hidden');
-    } catch(err) { alert('読み込みエラー: ' + err.message); }
+    } catch(err) { alert('èª­ã¿è¾¼ã¿ã¨ã©ã¼: ' + err.message); }
   };
   r.readAsArrayBuffer(file);
 }
@@ -294,27 +294,27 @@ function parseProfile(ws) {
   const m = {};
   rows.forEach(r => { if (r[0]) m[String(r[0]).trim()] = String(r[1] ?? '').trim(); });
   profile = {
-    name: m['お名前（ニックネーム可）'] || '',
-    genre: m['希望する仕事のジャンル'] || '',
-    hours: m['週に使える作業時間'] || '',
-    minBudget: m['希望する最低報酬'] || '',
-    experience: m['クラウドソーシング経験'] || '',
-    skill1: m['得意なこと・スキル①'] || '',
-    skill2: m['得意なこと・スキル②'] || '',
-    skill3: m['得意なこと・スキル③'] || '',
-    tools: m['使えるツール・ソフト'] || '',
-    langs: m['使えるプログラミング言語'] || '',
-    job1c: m['職歴① 会社名・役職'] || '',
-    job1p: m['職歴① 期間'] || '',
-    job1w: m['職歴① やっていた仕事内容'] || '',
-    job2c: m['職歴② 会社名・役職'] || '',
-    job2p: m['職歴② 期間'] || '',
-    job2w: m['職歴② やっていた仕事内容'] || '',
-    keywords: m['検索したいキーワード'] || '',
-    exclude: m['除外したいキーワード'] || '',
-    sites: m['検索するサイト'] || 'クラウドワークス',
-    jobType: m['案件の種類の希望'] || '',
-    other: m['その他の希望・条件'] || '',
+    name: m['ãååï¼ããã¯ãã¼ã å¯ï¼'] || '',
+    genre: m['å¸æããä»äºã®ã¸ã£ã³ã«'] || '',
+    hours: m['é±ã«ä½¿ããä½æ¥­æé'] || '',
+    minBudget: m['å¸æããæä½å ±é¬'] || '',
+    experience: m['ã¯ã©ã¦ãã½ã¼ã·ã³ã°çµé¨'] || '',
+    skill1: m['å¾æãªãã¨ã»ã¹ã­ã«â '] || '',
+    skill2: m['å¾æãªãã¨ã»ã¹ã­ã«â¡'] || '',
+    skill3: m['å¾æãªãã¨ã»ã¹ã­ã«â¢'] || '',
+    tools: m['ä½¿ãããã¼ã«ã»ã½ãã'] || '',
+    langs: m['ä½¿ãããã­ã°ã©ãã³ã°è¨èª'] || '',
+    job1c: m['è·æ­´â  ä¼ç¤¾åã»å½¹è·'] || '',
+    job1p: m['è·æ­´â  æé'] || '',
+    job1w: m['è·æ­´â  ãã£ã¦ããä»äºåå®¹'] || '',
+    job2c: m['è·æ­´â¡ ä¼ç¤¾åã»å½¹è·'] || '',
+    job2p: m['è·æ­´â¡ æé'] || '',
+    job2w: m['è·æ­´â¡ ãã£ã¦ããä»äºåå®¹'] || '',
+    keywords: m['æ¤ç´¢ãããã­ã¼ã¯ã¼ã'] || '',
+    exclude: m['é¤å¤ãããã­ã¼ã¯ã¼ã'] || '',
+    sites: m['æ¤ç´¢ãããµã¤ã'] || 'ã¯ã©ã¦ãã¯ã¼ã¯ã¹',
+    jobType: m['æ¡ä»¶ã®ç¨®é¡ã®å¸æ'] || '',
+    other: m['ãã®ä»ã®å¸æã»æ¡ä»¶'] || '',
   };
   renderProfile();
   document.getElementById('runBtn').disabled = false;
@@ -323,34 +323,34 @@ function parseProfile(ws) {
 function renderProfile() {
   const p = profile;
   const skills = [p.skill1, p.skill2, p.skill3].filter(Boolean);
-  const kws = p.keywords.split(/[,、]/).map(s => s.trim()).filter(Boolean);
+  const kws = p.keywords.split(/[,ã]/).map(s => s.trim()).filter(Boolean);
   document.getElementById('profBox').innerHTML = `
-    <div class="prof-row"><div class="prof-k">名前</div><div class="prof-v">${esc(p.name)||'–'}</div></div>
-    <div class="prof-row"><div class="prof-k">ジャンル</div><div class="prof-v">${esc(p.genre)||'–'}</div></div>
-    <div class="prof-row"><div class="prof-k">スキル</div><div class="prof-v">${skills.map(s=>`<span class="chip">${esc(s)}</span>`).join('')}</div></div>
-    <div class="prof-row"><div class="prof-k">ツール</div><div class="prof-v" style="font-size:11px">${esc(p.tools)||'–'}</div></div>
-    <div class="prof-row"><div class="prof-k">最低報酬</div><div class="prof-v">${esc(p.minBudget)||'–'}</div></div>
+    <div class="prof-row"><div class="prof-k">åå</div><div class="prof-v">${esc(p.name)||'â'}</div></div>
+    <div class="prof-row"><div class="prof-k">ã¸ã£ã³ã«</div><div class="prof-v">${esc(p.genre)||'â'}</div></div>
+    <div class="prof-row"><div class="prof-k">ã¹ã­ã«</div><div class="prof-v">${skills.map(s=>`<span class="chip">${esc(s)}</span>`).join('')}</div></div>
+    <div class="prof-row"><div class="prof-k">ãã¼ã«</div><div class="prof-v" style="font-size:11px">${esc(p.tools)||'â'}</div></div>
+    <div class="prof-row"><div class="prof-k">æä½å ±é¬</div><div class="prof-v">${esc(p.minBudget)||'â'}</div></div>
     <div class="prof-row"><div class="prof-k">KW</div><div class="prof-v">${kws.map(k=>`<span class="chip">${esc(k)}</span>`).join('')}</div></div>
-    <div class="prof-row"><div class="prof-k">サイト</div><div class="prof-v">${esc(p.sites)||'–'}</div></div>`;
+    <div class="prof-row"><div class="prof-k">ãµã¤ã</div><div class="prof-v">${esc(p.sites)||'â'}</div></div>`;
   document.getElementById('profSec').classList.remove('hidden');
 }
 
 // SEARCH
 async function runSearch() {
   const apiKey = document.getElementById('apiKey').value.trim();
-  if (!apiKey) { alert('Anthropic APIキーを入力してください。'); return; }
-  if (!profile.keywords) { alert('プロフィールが読み込まれていません。'); return; }
+  if (!apiKey) { alert('Anthropic APIã­ã¼ãå¥åãã¦ãã ããã'); return; }
+  if (!profile.keywords) { alert('ãã­ãã£ã¼ã«ãèª­ã¿è¾¼ã¾ãã¦ãã¾ããã'); return; }
 
   showView('loading');
   animateLogs();
 
-  const kws = profile.keywords.split(/[,、]/).map(s => s.trim()).filter(Boolean);
+  const kws = profile.keywords.split(/[,ã]/).map(s => s.trim()).filter(Boolean);
   const urls = kws.map(k => `https://crowdworks.jp/public/jobs/search?keyword=${encodeURIComponent(k)}&order=score&hide_expired=true&min_reward=5000`);
 
   try {
     const res = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'x-api-key': apiKey, 'anthropic-version': '2023-06-01' },
+      headers: { 'Content-Type': 'application/json', 'x-api-key': apiKey, 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' },
       body: JSON.stringify({
         model: 'claude-sonnet-4-20250514',
         max_tokens: 6000,
@@ -361,50 +361,50 @@ async function runSearch() {
     const data = await res.json();
     const text = data.content?.[0]?.text || '';
     const m = text.match(/\{[\s\S]*\}/);
-    if (!m) throw new Error('JSON解析エラー');
+    if (!m) throw new Error('JSONè§£æã¨ã©ã¼');
     const parsed = JSON.parse(m[0]);
     allJobs = parsed.jobs || [];
     showView('results');
     renderResults(parsed);
   } catch(err) {
     showView('results');
-    document.getElementById('errBox').innerHTML = `<div class="err">⚠️ ${esc(err.message)}</div>`;
+    document.getElementById('errBox').innerHTML = `<div class="err">â ï¸ ${esc(err.message)}</div>`;
   }
 }
 
 function buildPrompt(urls) {
   const p = profile;
-  return `あなたはフリーランス案件マッチングの専門AIです。
+  return `ããªãã¯ããªã¼ã©ã³ã¹æ¡ä»¶ãããã³ã°ã®å°éAIã§ãã
 
-フリーランサープロフィール:
-- 名前: ${p.name}
-- 希望ジャンル: ${p.genre}
-- スキル: ${[p.skill1,p.skill2,p.skill3].filter(Boolean).join('、')}
-- ツール: ${p.tools}
-- プログラミング言語: ${p.langs||'なし'}
-- CW経験: ${p.experience}
-- 職歴①: ${p.job1c}（${p.job1p}）${p.job1w}
-- 職歴②: ${p.job2c}（${p.job2p}）${p.job2w}
-- 週稼働: ${p.hours}
-- 希望最低報酬: ${p.minBudget}
-- 検索KW: ${p.keywords}
-- 除外KW: ${p.exclude||'なし'}
-- 検索サイト: ${p.sites}
-- 案件種類: ${p.jobType||'特になし'}
-- その他: ${p.other||'なし'}
+ããªã¼ã©ã³ãµã¼ãã­ãã£ã¼ã«:
+- åå: ${p.name}
+- å¸æã¸ã£ã³ã«: ${p.genre}
+- ã¹ã­ã«: ${[p.skill1,p.skill2,p.skill3].filter(Boolean).join('ã')}
+- ãã¼ã«: ${p.tools}
+- ãã­ã°ã©ãã³ã°è¨èª: ${p.langs||'ãªã'}
+- CWçµé¨: ${p.experience}
+- è·æ­´â : ${p.job1c}ï¼${p.job1p}ï¼${p.job1w}
+- è·æ­´â¡: ${p.job2c}ï¼${p.job2p}ï¼${p.job2w}
+- é±ç¨¼å: ${p.hours}
+- å¸ææä½å ±é¬: ${p.minBudget}
+- æ¤ç´¢KW: ${p.keywords}
+- é¤å¤KW: ${p.exclude||'ãªã'}
+- æ¤ç´¢ãµã¤ã: ${p.sites}
+- æ¡ä»¶ç¨®é¡: ${p.jobType||'ç¹ã«ãªã'}
+- ãã®ä»: ${p.other||'ãªã'}
 
-実際のクラウドワークス検索URL:
+å®éã®ã¯ã©ã¦ãã¯ã¼ã¯ã¹æ¤ç´¢URL:
 ${urls.map((u,i)=>`${i+1}. ${u}`).join('\n')}
 
-指示:
-1. 上記キーワードでクラウドワークスに実際に掲載されていそうなリアルな案件を15〜20件提案
-2. スキル・職歴との相性を「★★★」「★★☆」「★☆☆」で評価し★★☆以上のみ出力
-3. 希望最低報酬(${p.minBudget})を考慮
-4. 除外KW含む案件は除外
-5. URLはクラウドワークスの検索URLを使用
+æç¤º:
+1. ä¸è¨ã­ã¼ã¯ã¼ãã§ã¯ã©ã¦ãã¯ã¼ã¯ã¹ã«å®éã«æ²è¼ããã¦ããããªãªã¢ã«ãªæ¡ä»¶ã15ã20ä»¶ææ¡
+2. ã¹ã­ã«ã»è·æ­´ã¨ã®ç¸æ§ããâââããâââããâââãã§è©ä¾¡ãâââä»¥ä¸ã®ã¿åºå
+3. å¸ææä½å ±é¬(${p.minBudget})ãèæ®
+4. é¤å¤KWå«ãæ¡ä»¶ã¯é¤å¤
+5. URLã¯ã¯ã©ã¦ãã¯ã¼ã¯ã¹ã®æ¤ç´¢URLãä½¿ç¨
 
-必ずこのJSONのみで返答（マークダウン不要）:
-{"summary":"市場価値・強みの分析200字","jobs":[{"site":"クラウドワークス","title":"案件名","category":"カテゴリ","budget":"報酬額","deadline":"期限目安","match":"★★★か★★☆","reason":"マッチ理由70字","url":"https://crowdworks.jp/public/jobs/search?keyword=..."}],"advice":"アドバイス150字"}`;
+å¿ããã®JSONã®ã¿ã§è¿ç­ï¼ãã¼ã¯ãã¦ã³ä¸è¦ï¼:
+{"summary":"å¸å ´ä¾¡å¤ã»å¼·ã¿ã®åæ200å­","jobs":[{"site":"ã¯ã©ã¦ãã¯ã¼ã¯ã¹","title":"æ¡ä»¶å","category":"ã«ãã´ãª","budget":"å ±é¬é¡","deadline":"æéç®å®","match":"âââãâââ","reason":"ãããçç±70å­","url":"https://crowdworks.jp/public/jobs/search?keyword=..."}],"advice":"ã¢ããã¤ã¹150å­"}`;
 }
 
 // LOADING ANIM
@@ -427,26 +427,26 @@ function renderResults(data) {
   if (data.summary) {
     document.getElementById('sumSec').innerHTML = `
       <div class="sum-card">
-        <div class="sum-icon">📊</div>
-        <div><div class="sum-title">AI 総合分析</div><div class="sum-text">${esc(data.summary)}</div></div>
+        <div class="sum-icon">ð</div>
+        <div><div class="sum-title">AI ç·ååæ</div><div class="sum-text">${esc(data.summary)}</div></div>
       </div>`;
   }
 
   const sites = [...new Set(allJobs.map(j => j.site))];
   document.getElementById('filterBar').innerHTML =
-    `<button class="ft on" onclick="filterJobs('all',this)">すべて（${allJobs.length}）</button>` +
-    sites.map(s => `<button class="ft" onclick="filterJobs('${esc(s)}',this)">${esc(s)}（${allJobs.filter(j=>j.site===s).length}）</button>`).join('');
+    `<button class="ft on" onclick="filterJobs('all',this)">ãã¹ã¦ï¼${allJobs.length}ï¼</button>` +
+    sites.map(s => `<button class="ft" onclick="filterJobs('${esc(s)}',this)">${esc(s)}ï¼${allJobs.filter(j=>j.site===s).length}ï¼</button>`).join('');
 
   document.getElementById('resMeta').textContent =
-    `${allJobs.length}件のマッチング案件 • ${new Date().toLocaleDateString('ja-JP')} 検索`;
+    `${allJobs.length}ä»¶ã®ãããã³ã°æ¡ä»¶ â¢ ${new Date().toLocaleDateString('ja-JP')} æ¤ç´¢`;
 
   renderJobList('all');
 
   if (data.advice) {
     document.getElementById('advSec').innerHTML = `
       <div class="adv">
-        <div class="adv-icon">💡</div>
-        <div><div class="adv-title">AIからのアドバイス</div><div class="adv-text">${esc(data.advice)}</div></div>
+        <div class="adv-icon">ð¡</div>
+        <div><div class="adv-title">AIããã®ã¢ããã¤ã¹</div><div class="adv-text">${esc(data.advice)}</div></div>
       </div>`;
   }
 }
@@ -465,8 +465,8 @@ function renderJobList(site) {
   empty.classList.add('hidden');
 
   list.innerHTML = jobs.map((job, idx) => {
-    const n = job.match === '★★★' ? 3 : 2;
-    const stars = [1,2,3].map(i => `<span class="star ${i<=n?'on':'off'}">★</span>`).join('');
+    const n = job.match === 'âââ' ? 3 : 2;
+    const stars = [1,2,3].map(i => `<span class="star ${i<=n?'on':'off'}">â</span>`).join('');
     return `
     <div class="jc ${n===3?'s3':'s2'}" style="animation-delay:${idx*.05}s">
       <div class="j-top">
@@ -475,11 +475,11 @@ function renderJobList(site) {
       </div>
       <div class="j-mid">
         <span class="j-budget">${esc(job.budget)}</span>
-        ${job.deadline?`<span class="j-dl">📅 ${esc(job.deadline)}</span>`:''}
-        <div class="stars">${stars}<span class="m-lbl ${n===3?'m-h':'m-m'}">${n===3?'高マッチ':'良マッチ'}</span></div>
+        ${job.deadline?`<span class="j-dl">ð ${esc(job.deadline)}</span>`:''}
+        <div class="stars">${stars}<span class="m-lbl ${n===3?'m-h':'m-m'}">${n===3?'é«ããã':'è¯ããã'}</span></div>
       </div>
-      <div class="j-reason">💬 ${esc(job.reason)}</div>
-      <div class="j-foot"><a href="${esc(job.url)}" target="_blank" rel="noopener" class="apply">クラウドワークスで探す ↗</a></div>
+      <div class="j-reason">ð¬ ${esc(job.reason)}</div>
+      <div class="j-foot"><a href="${esc(job.url)}" target="_blank" rel="noopener" class="apply">ã¯ã©ã¦ãã¯ã¼ã¯ã¹ã§æ¢ã â</a></div>
     </div>`;
   }).join('');
 }
@@ -494,9 +494,9 @@ function resetApp() {
   allJobs = []; profile = {};
   document.getElementById('fileInput').value = '';
   dz.classList.remove('ok');
-  document.getElementById('di').textContent = '📊';
-  document.getElementById('dt').textContent = 'Excelをドロップ';
-  document.getElementById('ds').textContent = 'または クリックして選択';
+  document.getElementById('di').textContent = 'ð';
+  document.getElementById('dt').textContent = 'Excelããã­ãã';
+  document.getElementById('ds').textContent = 'ã¾ãã¯ ã¯ãªãã¯ãã¦é¸æ';
   document.getElementById('df').classList.add('hidden');
   document.getElementById('profSec').classList.add('hidden');
   document.getElementById('runBtn').disabled = true;

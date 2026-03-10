@@ -1,7 +1,7 @@
-<!DOCTYPE html>
+<!D90CQYPE html>
 <html lang="ja">
 <head>
-<meta charset="UTF-8">
+<meta charset="UTF8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>案件スカウター</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
@@ -263,6 +263,7 @@ function toggleKey() {
 
 // DRAG DROP
 const dz = document.getElementById('dropZone');
+dz.addEventListener('click', () => document.getElementById('fileInput').click());
 dz.addEventListener('dragover', e => { e.preventDefault(); dz.style.borderColor = 'var(--gold)'; });
 dz.addEventListener('dragleave', () => { dz.style.borderColor = ''; });
 dz.addEventListener('drop', e => { e.preventDefault(); dz.style.borderColor = ''; handleFile(e.dataTransfer.files[0]); });
@@ -330,7 +331,7 @@ function renderProfile() {
     <div class="prof-row"><div class="prof-k">スキル</div><div class="prof-v">${skills.map(s=>`<span class="chip">${esc(s)}</span>`).join('')}</div></div>
     <div class="prof-row"><div class="prof-k">ツール</div><div class="prof-v" style="font-size:11px">${esc(p.tools)||'–'}</div></div>
     <div class="prof-row"><div class="prof-k">最低報酬</div><div class="prof-v">${esc(p.minBudget)||'–'}</div></div>
-    <div class="prof-row"><div class="prof-k">KW</div><div class="prof-v">${kws.map(k=>`<span class="chip">${eschk)}</span>`).join('')}</div></div>
+    <div class="prof-row"><div class="prof-k">KW</div><div class="prof-v">${kws.map(k=>`<span class="chip">${esc(k)}</span>`).join('')}</div></div>
     <div class="prof-row"><div class="prof-k">サイト</div><div class="prof-v">${esc(p.sites)||'–'}</div></div>`;
   document.getElementById('profSec').classList.remove('hidden');
 }
